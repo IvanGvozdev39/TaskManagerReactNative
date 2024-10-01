@@ -21,7 +21,7 @@ const placeholderTasks: Task[] = [
     id: '1',
     title: 'Buy Groceries in that one store across the city where i saw those things',
     description: 'Milk, Bread, Eggs, Butter',
-    expirationDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
+    expirationDate: new Date(Date.now() + 2 * 60 * 1000), // 3 days from now
     location: 'Supermarket',
     status: 'Ongoing',
   },

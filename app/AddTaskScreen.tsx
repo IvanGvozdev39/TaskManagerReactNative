@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Dimensions } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import colors from '../constants/Colors';
 
@@ -8,6 +8,7 @@ export default function AddTaskScreen() {
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
   const [expirationDate, setExpirationDate] = useState(new Date());
+  const [expirationTime, setExpirationTime] = useState(new Date());
 
   const showDatePicker = () => {
     DateTimePickerAndroid.open({
@@ -19,7 +20,21 @@ export default function AddTaskScreen() {
       },
       mode: 'date',
       is24Hour: true,
-      display: 'calendar',
+      display: 'spinner',
+    });
+  };
+
+  const showTimePicker = () => {
+    DateTimePickerAndroid.open({
+      value: expirationTime,
+      onChange: (event, selectedTime) => {
+        if (selectedTime) {
+          setExpirationTime(selectedTime);
+        }
+      },
+      mode: 'time',
+      is24Hour: true,
+      display: 'spinner',
     });
   };
 
@@ -42,14 +57,26 @@ export default function AddTaskScreen() {
         cursorColor={colors.lightGrey}
       />
       
-      <TouchableOpacity style={buttonStyle} onPress={showDatePicker}>
-        <Text style={buttonTextStyle}>Pick Expiration Date</Text>
-      </TouchableOpacity>
+      <View style={styles.row}>
+        <TouchableOpacity style={styles.button} onPress={showDatePicker}>
+          <Text style={styles.buttonText}>Expiration Date</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.button} onPress={showTimePicker}>
+          <Text style={styles.buttonText}>Expiration Time</Text>
+        </TouchableOpacity>
+      </View>
 
-      <Text style={styles.dateText}>
-        {formatDate(expirationDate)}
-      </Text>
 
+      <View style={styles.rowDateTimeText}>
+        <Text style={styles.dateText}>
+          {formatDate(expirationDate)}
+        </Text>
+      
+        <Text style={styles.dateText}>
+          {formatTime(expirationTime)}
+        </Text>
+      </View>
 
       <TextInput
         style={styles.input}
@@ -74,50 +101,69 @@ const formatDate = (date) => {
   return `${year}.${month}.${day}`;
 };
 
+const formatTime = (time) => {
+  const hours = time.getHours().toString().padStart(2, '0'); // Add leading zero if needed
+  const minutes = time.getMinutes().toString().padStart(2, '0'); // Add leading zero if needed
+  return `${hours}:${minutes}`;
+};
 
-const buttonStyle = {
-  backgroundColor: colors.primaryGreen,
-  borderRadius: 10,
-  paddingVertical: 15,
-  alignItems: 'center',
-  marginBottom: 10,
-}
-
-const buttonTextStyle = {
-  color: colors.whiteText,
-  fontSize: 16,
-  fontWeight: 'normal',
-}
+const width = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    paddingHorizontal: 20,
     flex: 1,
     backgroundColor: colors.darkBackground,
   },
   input: {
     backgroundColor: colors.darkGrey,
     padding: 12,
-    marginBottom: 15,
+    marginTop: 16,
     borderRadius: 10,
     color: colors.whiteText,
     fontSize: 16,
   },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  rowDateTimeText: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+  },
+  button: {
+    backgroundColor: colors.primaryGreen,
+    borderRadius: 10,
+    paddingVertical: 16,
+    width: (width/2) - 28,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: colors.whiteText,
+    fontSize: 16,
+    fontWeight: 'normal',
+  },
   dateText: {
     color: colors.whiteText,
-    marginBottom: 16,
+    marginTop: 10,
     fontSize: 16,
   },
   addButton: {
-    ...buttonStyle,
+    backgroundColor: colors.primaryGreen,
+    borderRadius: 10,
+    paddingVertical: 16,
     position: 'absolute',
     bottom: 20,
     left: 20,
     right: 20,
     justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   addButtonText: {
-    ...buttonTextStyle,
+    color: colors.whiteText,
+    fontSize: 16,
     fontWeight: 'bold',
-  }
+  },
 });
