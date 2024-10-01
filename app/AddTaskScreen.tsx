@@ -17,8 +17,9 @@ export default function AddTaskScreen() {
           setExpirationDate(selectedDate);
         }
       },
-      mode: 'datetime',
+      mode: 'date',
       is24Hour: true,
+      display: 'calendar',
     });
   };
 
@@ -46,8 +47,9 @@ export default function AddTaskScreen() {
       </TouchableOpacity>
 
       <Text style={styles.dateText}>
-        {expirationDate.toLocaleString()}
+        {formatDate(expirationDate)}
       </Text>
+
 
       <TextInput
         style={styles.input}
@@ -64,6 +66,14 @@ export default function AddTaskScreen() {
     </View>
   );
 }
+
+const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
+  const day = date.getDate().toString().padStart(2, '0'); // Add leading zero if needed
+  return `${year}.${month}.${day}`;
+};
+
 
 const buttonStyle = {
   backgroundColor: colors.primaryGreen,
@@ -95,18 +105,19 @@ const styles = StyleSheet.create({
   },
   dateText: {
     color: colors.whiteText,
-    marginBottom: 10,
+    marginBottom: 16,
+    fontSize: 16,
   },
   addButton: {
+    ...buttonStyle,
     position: 'absolute',
     bottom: 20,
     left: 20,
     right: 20,
     justifyContent: 'flex-end',
-    ...buttonStyle,
   },
   addButtonText: {
+    ...buttonTextStyle,
     fontWeight: 'bold',
-    ...buttonTextStyle
   }
 });
