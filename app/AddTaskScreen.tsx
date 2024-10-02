@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text, Dimensions } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Dimensions, Alert } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import colors from '../constants/Colors';
+import { addTask } from '../database/db'; // import the updated addTask
+import { useRouter } from 'expo-router';
 
 export default function AddTaskScreen() {
   const [title, setTitle] = useState('');
@@ -9,6 +11,8 @@ export default function AddTaskScreen() {
   const [location, setLocation] = useState('');
   const [expirationDate, setExpirationDate] = useState(new Date());
   const [expirationTime, setExpirationTime] = useState(new Date());
+
+  const router = useRouter();
 
   const showDatePicker = () => {
     DateTimePickerAndroid.open({
@@ -38,6 +42,32 @@ export default function AddTaskScreen() {
     });
   };
 
+  const handleAddTask = async () => {
+    if (!title.trim()) {
+      Alert.alert('Validation Error', 'Task Title is required.');
+      return;
+    }
+
+    const formattedDate = formatDate(expirationDate);
+    const formattedTime = formatTime(expirationTime);
+
+    try {
+      await addTask({
+        title,
+        description,
+        date: formattedDate,
+        time: formattedTime,
+        location,
+      });
+
+      Alert.alert('Success', 'Task added successfully!');
+      router.back(); // Navigate back to the main screen
+    } catch (error) {
+      Alert.alert('Error', 'Failed to add task. Please try again.');
+      console.error('Error adding task:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -46,7 +76,6 @@ export default function AddTaskScreen() {
         placeholderTextColor={colors.lightGrey}
         value={title}
         onChangeText={setTitle}
-        cursorColor={colors.lightGrey}
       />
       <TextInput
         style={styles.input}
@@ -54,28 +83,21 @@ export default function AddTaskScreen() {
         placeholderTextColor={colors.lightGrey}
         value={description}
         onChangeText={setDescription}
-        cursorColor={colors.lightGrey}
       />
-      
+
       <View style={styles.row}>
         <TouchableOpacity style={styles.button} onPress={showDatePicker}>
           <Text style={styles.buttonText}>Expiration Date</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.button} onPress={showTimePicker}>
           <Text style={styles.buttonText}>Expiration Time</Text>
         </TouchableOpacity>
       </View>
 
-
       <View style={styles.rowDateTimeText}>
-        <Text style={styles.dateText}>
-          {formatDate(expirationDate)}
-        </Text>
-      
-        <Text style={styles.dateText}>
-          {formatTime(expirationTime)}
-        </Text>
+        <Text style={styles.dateText}>{formatDate(expirationDate)}</Text>
+        <Text style={styles.dateText}>{formatTime(expirationTime)}</Text>
       </View>
 
       <TextInput
@@ -84,24 +106,23 @@ export default function AddTaskScreen() {
         placeholderTextColor={colors.lightGrey}
         value={location}
         onChangeText={setLocation}
-        cursorColor={colors.lightGrey}
       />
-      
-      <TouchableOpacity style={styles.addButton} onPress={() => { /* Add Task Action */ }}>
+
+      <TouchableOpacity style={styles.addButton} onPress={handleAddTask}>
         <Text style={styles.addButtonText}>Add Task</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-const formatDate = (date) => {
+const formatDate = (date: Date): string => {
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
   const day = date.getDate().toString().padStart(2, '0'); // Add leading zero if needed
   return `${year}.${month}.${day}`;
 };
 
-const formatTime = (time) => {
+const formatTime = (time: Date): string => {
   const hours = time.getHours().toString().padStart(2, '0'); // Add leading zero if needed
   const minutes = time.getMinutes().toString().padStart(2, '0'); // Add leading zero if needed
   return `${hours}:${minutes}`;
@@ -137,13 +158,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryGreen,
     borderRadius: 10,
     paddingVertical: 16,
-    width: (width/2) - 28,
+    width: (width / 2) - 28,
     alignItems: 'center',
   },
   buttonText: {
     color: colors.whiteText,
     fontSize: 16,
-    fontWeight: 'normal',
   },
   dateText: {
     color: colors.whiteText,
@@ -155,15 +175,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 16,
     position: 'absolute',
-    bottom: 20,
+    bottom: 40,
     left: 20,
     right: 20,
-    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   addButtonText: {
     color: colors.whiteText,
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 18,
   },
 });

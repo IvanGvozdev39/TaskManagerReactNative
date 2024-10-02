@@ -9,6 +9,8 @@ const strings = {
     statusOngoing: 'Ongoing',
     statusCancelled: 'Cancelled',
     left: 'left',
+    noOngoing: 'No ongoing tasks',
+    noTasksYet: 'No tasks here yet',
   };
   
   export default strings;

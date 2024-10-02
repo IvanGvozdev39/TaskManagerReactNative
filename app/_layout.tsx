@@ -14,9 +14,9 @@ export default function RootLayout() {
       <Stack.Screen
         name="AddTaskScreen"
         options={{
-          headerShown: true, // Show the header if you want
+          headerShown: true,
           title: 'Add Task',
-          headerTintColor: colors.whiteText, // Customize header color if needed
+          headerTintColor: colors.whiteText,
           headerStyle: {
             backgroundColor: colors.darkBackground,
           },

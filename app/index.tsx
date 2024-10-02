@@ -1,64 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
 import TabMenu from '../components/TabMenu';
 import TaskList from '../components/TaskList';
 import colors from '../constants/Colors';
-import { AntDesign } from '@expo/vector-icons'; // Using Expo Vector Icons
-import { useRouter } from 'expo-router'; // Import useRouter
-
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  expirationDate: Date;
-  location: string;
-  status: string;
-}
-
-const placeholderTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Buy Groceries in that one store across the city where i saw those things',
-    description: 'Milk, Bread, Eggs, Butter',
-    expirationDate: new Date(Date.now() + 2 * 60 * 1000), // 3 days from now
-    location: 'Supermarket',
-    status: 'Ongoing',
-  },
-  {
-    id: '2',
-    title: 'Meeting with Team',
-    description: 'Discuss project milestones',
-    expirationDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
-    location: 'Office',
-    status: 'Completed',
-  },
-  {
-    id: '3',
-    title: 'Workout',
-    description: 'Gym session',
-    expirationDate: new Date(Date.now() - 20 * 60 * 1000), // 20 minutes ago
-    location: 'Gym',
-    status: 'Cancelled',
-  },
-];
+import { AntDesign } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import SQLite from 'react-native-sqlite-storage';
 
 export default function Index() {
   const [selectedTab, setSelectedTab] = useState<string>('Ongoing');
+  const [tasks, setTasks] = useState<any[]>([]);
 
-  const filterTasks = (status: string) => {
-    if (status === 'All') return placeholderTasks;
-    return placeholderTasks.filter((task) => task.status === status);
+  const router = useRouter();
+
+  useEffect(() => {
+    const initializeAndFetch = async () => {
+      const database = await initializeDB(); // Wait for the database to initialize
+      if (database) {
+        fetchTasks(); // Only fetch tasks if database is successfully initialized
+      }
+    };
+  
+    initializeAndFetch();
+  }, [selectedTab]);
+  
+
+  const fetchTasks = () => {
+    getTasks(selectedTab, (fetchedTasks) => {
+      setTasks(fetchedTasks);
+    });
   };
-
-  const router = useRouter(); // Initialize useRouter
-
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={colors.darkBackground} />
       <TabMenu selectedTab={selectedTab} onTabPress={setSelectedTab} />
-      <TaskList tasks={filterTasks(selectedTab)} />
+      <TaskList tasks={tasks} selectedStatus={selectedTab} />
       <TouchableOpacity style={styles.fab} onPress={() => router.push('/AddTaskScreen')}>
         <AntDesign name="plus" size={24} color={colors.whiteText} />
       </TouchableOpacity>
