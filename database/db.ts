@@ -1,81 +1,82 @@
-import SQLite from 'react-native-sqlite-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import strings from '@/constants/Strings';
+import { Task } from '@/models/Task';
 
-SQLite.DEBUG(true); // Optional: enable for logging SQL statements
-SQLite.enablePromise(true); // Enables promise-based API
+const TASKS_KEY = '@tasks';
 
-let db: SQLite.SQLiteDatabase | null = null;
-
-// Open the database (or create it if it doesn't exist)
-export const initializeDB = async () => {
-  try {
-    db = await SQLite.openDatabase({ name: 'tasks.db', location: 'default' });
-    console.log('Database opened successfully');
-    await createTable(); // Create the table after opening the DB
-    return db; // Return the database instance
-  } catch (error) {
-    console.error('Error opening database:', error);
-    return null; // Return null on error
-  }
+const getNextId = async (): Promise<number> => {
+  const storedTasks = await AsyncStorage.getItem(TASKS_KEY);
+  const tasks = storedTasks ? JSON.parse(storedTasks) : [];
+  return tasks.length ? Math.max(...tasks.map((task: Task) => task.id)) + 1 : 1;
 };
 
-
-// Create the tasks table
-export const createTable = async () => {
-  if (!db) {
-    console.error('Database not initialized. Cannot create table.');
-    return;
-  }
-
+export const getTasks = async (status: string): Promise<Task[]> => {
   try {
-    await db.executeSql(`
-      CREATE TABLE IF NOT EXISTS tasks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        description TEXT,
-        date TEXT,
-        time TEXT,
-        location TEXT,
-        status TEXT
-      );
-    `);
-    console.log('Table created or already exists');
-  } catch (error) {
-    console.error('Error creating table:', error);
-  }
-};
-
-// Fetch tasks from the database
-export const getTasks = async (status: string, successCallback: (tasks: any[]) => void) => {
-  if (!db) {
-    console.error('Database is not initialized');
-    return;
-  }
-
-  try {
-    const [result] = await db.executeSql(`SELECT * FROM tasks WHERE status = ?`, [status]);
-    const tasks = result.rows.raw(); // Get all rows as an array
-    console.log('Fetched tasks:', tasks); // Log fetched tasks
-    successCallback(tasks);
+    const storedTasks = await AsyncStorage.getItem(TASKS_KEY);
+    const tasks = storedTasks ? JSON.parse(storedTasks) : [];
+    if (status === strings.tabs[2])
+      return tasks;
+    return tasks.filter((task: Task) => task.status === status);
   } catch (error) {
     console.error('Error fetching tasks:', error);
+    return [];
   }
 };
 
-
-// Add a new task
-export const addTask = async (task: { title: string, description: string, date: string, time: string, location: string }) => {
-  if (!db) {
-    console.error('Database not initialized. Cannot add task.');
-    return;
-  }
-
+export const addTask = async (task: { title: string; description: string; date: string; time: string; location: string; status?: string }) => {
   try {
-    await db.executeSql(
-      `INSERT INTO tasks (title, description, date, time, location, status) VALUES (?, ?, ?, ?, ?, ?)`,
-      [task.title, task.description, task.date, task.time, task.location, 'Ongoing']
-    );
+    const taskId = await getNextId();
+    const storedTasks = await AsyncStorage.getItem(TASKS_KEY);
+    const tasks = storedTasks ? JSON.parse(storedTasks) : [];
+    
+    const newTask: Task = {
+      id: taskId,
+      title: task.title,
+      description: task.description,
+      date: task.date,
+      time: task.time,
+      location: task.location,
+      status: 'Ongoing',
+    };
+
+    tasks.push(newTask);
+    await AsyncStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
     console.log('Task added successfully');
   } catch (error) {
     console.error('Error adding task:', error);
+  }
+};
+
+export const deleteTask = async (taskId: number) => {
+  try {
+    const storedTasks = await AsyncStorage.getItem(TASKS_KEY);
+    const tasks = storedTasks ? JSON.parse(storedTasks) : [];
+    
+    const updatedTasks = tasks.filter((task: Task) => task.id !== taskId);
+    
+    await AsyncStorage.setItem(TASKS_KEY, JSON.stringify(updatedTasks));
+    console.log('Task deleted successfully');
+  } catch (error) {
+    console.error('Error deleting task:', error);
+  }
+};
+
+export const updateTaskStatus = async (taskId: number, newStatus: string) => {
+  try {
+    const storedTasks = await AsyncStorage.getItem(TASKS_KEY);
+    const tasks = storedTasks ? JSON.parse(storedTasks) : [];
+
+    const taskIndex = tasks.findIndex((task: Task) => task.id === taskId);
+    
+    if (taskIndex === -1) {
+      console.error('Task not found');
+      return;
+    }
+    tasks[taskIndex].status = newStatus;
+
+    await AsyncStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+    console.log('Task status updated successfully');
+  } catch (error) {
+    console.error('Error updating task status:', error);
   }
 };

@@ -17,7 +17,7 @@ const TabMenu: React.FC<TabMenuProps> = ({ selectedTab, onTabPress }) => {
   const handleTabPress = (tab: string, index: number) => {
     onTabPress(tab);
     Animated.spring(translateX, {
-      toValue: index * (TAB_WIDTH - 10), // Adjust movement here
+      toValue: index * (TAB_WIDTH - 10),
       useNativeDriver: true,
     }).start();
   };
@@ -26,7 +26,7 @@ const TabMenu: React.FC<TabMenuProps> = ({ selectedTab, onTabPress }) => {
 
   useEffect(() => {
     Animated.spring(translateX, {
-      toValue: activeIndex * (TAB_WIDTH - 10), // Adjust movement here
+      toValue: activeIndex * (TAB_WIDTH - 10),
       useNativeDriver: true,
     }).start();
   }, [activeIndex]);
@@ -34,17 +34,15 @@ const TabMenu: React.FC<TabMenuProps> = ({ selectedTab, onTabPress }) => {
   return (
     <View style={styles.container}>
       <View style={styles.tabs}>
-        {/* Slider */}
         <Animated.View
           style={[
             styles.activeTab,
             {
-              width: TAB_WIDTH - 30, // Adjust the slider width to align with text
+              width: TAB_WIDTH - 30,
               transform: [{ translateX }],
             },
           ]}
         />
-        {/* Tab Buttons */}
         {strings.tabs.map((tab, index) => (
           <TouchableOpacity
             key={tab}
@@ -69,16 +67,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     height: 40,
     backgroundColor: colors.tabBackground,
-    borderRadius: 20,
+    borderRadius: 10,
     position: 'relative',
   },
   activeTab: {
     position: 'absolute',
     height: 35,
     backgroundColor: colors.activeTabBackground,
-    borderRadius: 20,
-    top: 2.5, // Center the slider vertically within the tab container
-    left: 5, // Adjust the starting point of the slider
+    borderRadius: 10,
+    top: 2.5,
+    left: 5
   },
   tab: {
     flex: 1,

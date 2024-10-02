@@ -3,13 +3,15 @@ const colors = {
   tabBackground: '#333333',
   activeTabBackground: '#555555',
   whiteText: '#f7f6f6',
-  grey: '#4F4F4F',
-  lightGrey: '#757575',
+  grey: '#454444',
+  lightGrey: '#696969',
   darkGrey: '#333333',
   green: '#4CAF50',
   primaryGreen: '#70946e',
   yellow: '#FFEB3B',
   red: '#F44336',
+  buttonRed: '#a33129',
+  transparentBlack: '#00000090'
 };
 
 export default colors;

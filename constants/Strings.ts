@@ -4,13 +4,26 @@ const strings = {
     placeholderDescription: 'This is a description of the task.',
     placeholderLocation: 'New York, NY',
     welcome: 'Welcome to Task-Manager',
-    addTask: 'Add Task',
+    addTask: 'Add task',
     statusCompleted: 'Completed',
     statusOngoing: 'Ongoing',
     statusCancelled: 'Cancelled',
     left: 'left',
     noOngoing: 'No ongoing tasks',
     noTasksYet: 'No tasks here yet',
+    allFieldsRequired: 'All fields are required',
+    failedToAddTask: 'Failed to add task. Please try again',
+    title: 'Title',
+    description: 'Description',
+    expirationDate: 'Expiration date',
+    expirationTime: 'Expiration time',
+    location: 'Location',
+    changeTaskStatus: 'Change task status',
+    deleteTask: 'Delete task',
+    close: 'Close',
+    expired: 'Expired',
+    
+
   };
   
   export default strings;

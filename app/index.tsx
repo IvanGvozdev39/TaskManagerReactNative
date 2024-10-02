@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
 import TabMenu from '../components/TabMenu';
 import TaskList from '../components/TaskList';
 import colors from '../constants/Colors';
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import SQLite from 'react-native-sqlite-storage';
+import { getTasks } from '../database/db';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 export default function Index() {
   const [selectedTab, setSelectedTab] = useState<string>('Ongoing');
@@ -13,31 +15,28 @@ export default function Index() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const initializeAndFetch = async () => {
-      const database = await initializeDB(); // Wait for the database to initialize
-      if (database) {
-        fetchTasks(); // Only fetch tasks if database is successfully initialized
-      }
-    };
-  
-    initializeAndFetch();
+  const fetchTasks = useCallback(async () => {
+    const fetchedTasks = await getTasks(selectedTab);
+    setTasks(fetchedTasks);
   }, [selectedTab]);
-  
 
-  const fetchTasks = () => {
-    getTasks(selectedTab, (fetchedTasks) => {
-      setTasks(fetchedTasks);
-    });
-  };
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchTasks();
+    }, [fetchTasks])
+  );
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.darkBackground} />
+      <StatusBar barStyle='light-content' backgroundColor={colors.darkBackground} />
       <TabMenu selectedTab={selectedTab} onTabPress={setSelectedTab} />
-      <TaskList tasks={tasks} selectedStatus={selectedTab} />
+      <TaskList tasks={tasks} selectedStatus={selectedTab} reloadTasks={fetchTasks} />
       <TouchableOpacity style={styles.fab} onPress={() => router.push('/AddTaskScreen')}>
-        <AntDesign name="plus" size={24} color={colors.whiteText} />
+        <AntDesign name='plus' size={24} color={colors.whiteText} />
       </TouchableOpacity>
     </View>
   );

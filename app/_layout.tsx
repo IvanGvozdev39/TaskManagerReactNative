@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
 import colors from '../constants/Colors';
+import strings from "@/constants/Strings";
 
 export default function RootLayout() {
   return (
@@ -15,7 +16,7 @@ export default function RootLayout() {
         name="AddTaskScreen"
         options={{
           headerShown: true,
-          title: 'Add Task',
+          title: `${strings.addTask}`,
           headerTintColor: colors.whiteText,
           headerStyle: {
             backgroundColor: colors.darkBackground,
