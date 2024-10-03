@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   confirmButton: {
     flex: 1,
     padding: 10,
-    backgroundColor: colors.primaryGreen,
+    backgroundColor: colors.green,
     borderRadius: 5,
     marginRight: 10,
     alignItems: 'center',

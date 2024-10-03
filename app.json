@@ -1,24 +1,30 @@
 {
   "expo": {
-    "name": "task-manager",
+    "name": "Task Manager",
     "slug": "task-manager",
     "version": "1.0.0",
     "orientation": "portrait",
+    "platforms": [
+      "android",
+      "ios"
+    ],
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
+    "githuburl": "https://github.com/IvanGvozdev39/TaskManagerReactNative",
+    "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#121212"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false
     },
     "android": {
+      "supportsTablet": false,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#121212"
       },
       "permissions": [
         "WRITE_EXTERNAL_STORAGE",
@@ -35,6 +41,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "976a6392-9c8e-47be-bd33-0963c97a8d04"
+      }
+    },
+    "owner": "ivang39"
   }
 }

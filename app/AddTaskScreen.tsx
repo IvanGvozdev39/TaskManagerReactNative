@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   button: {
-    backgroundColor: colors.primaryGreen,
+    backgroundColor: colors.green,
     borderRadius: 10,
     paddingVertical: 16,
     width: (width / 2) - 28,
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   addButton: {
-    backgroundColor: colors.primaryGreen,
+    backgroundColor: colors.green,
     borderRadius: 10,
     paddingVertical: 16,
     position: 'absolute',

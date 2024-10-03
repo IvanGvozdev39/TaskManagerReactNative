@@ -22,7 +22,9 @@ const strings = {
     deleteTask: 'Delete task',
     close: 'Close',
     expired: 'Expired',
-    
+    date: 'Date',
+    status: 'Status',
+    filterBy: 'Filter by:',
 
   };
   
